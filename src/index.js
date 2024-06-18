@@ -20,6 +20,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
 } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -65,7 +66,7 @@ const q = query(colRef, orderBy('createdAt'));
 
 // Real time collection data
 // onSnapshot(colRef, (snapshot) => {
-onSnapshot(q, (snapshot) => {
+const unsubCol = onSnapshot(q, (snapshot) => {
   let books = [];
   snapshot.docs.forEach((doc) => {
     books.push({ ...doc.data(), id: doc.id });
@@ -108,7 +109,7 @@ const docRef = doc(db, 'books', 'IkyiHZlDusxLZgbgXyU7');
 // });
 
 // Subscribing to changes on a particular doc.
-onSnapshot(docRef, (doc) => {
+const unsubDoc = onSnapshot(docRef, (doc) => {
   console.log(doc.data(), doc.id);
 });
 
@@ -138,7 +139,7 @@ signupForm.addEventListener('submit', (e) => {
     // the createUser method gives a user credential object with access to the user
 
     .then((cred) => {
-      console.log('User Created: ', cred.user);
+      // console.log('User Created: ', cred.user);
       signupForm.reset();
     })
     .catch((err) => console.log(err.message));
@@ -149,7 +150,7 @@ const logoutButton = document.querySelector('.logout');
 logoutButton.addEventListener('click', () => {
   signOut(auth)
     .then(() => {
-      console.log('User Signed out');
+      // console.log('User Signed out');
     })
     .catch((err) => console.log(err.message));
 });
@@ -163,9 +164,25 @@ loginForm.addEventListener('submit', (e) => {
 
   signInWithEmailAndPassword(auth, email, password)
     .then((cred) => {
-      console.log('User logged in: ', cred.user);
+      // console.log('User logged in: ', cred.user);
     })
     .catch((err) => console.log(err.message));
 
   loginForm.reset();
+});
+
+// Subscribing to auth changes
+const unsubAuth = onAuthStateChanged(auth, (user) => {
+  console.log('User status changed: ', user);
+});
+
+// unsubscribing from changes (auth & db)
+const unsubButton = document.querySelector('.unsub');
+unsubButton.addEventListener('click', () => {
+  // For every firebase changes, they return an unsuscribe function and to get that, we need to store each changes in an individual variable and use the variables  here
+
+  console.log('Unsuscribing...');
+  unsubCol();
+  unsubDoc();
+  unsubAuth();
 });
