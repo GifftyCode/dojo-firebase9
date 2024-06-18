@@ -9,6 +9,8 @@ import {
   onSnapshot,
   query,
   where,
+  orderBy,
+  serverTimestamp,
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -41,7 +43,14 @@ const colRef = collection(db, 'books');
 //   .catch((err) => console.log(err.message));
 
 // Firestore queries to get a particular doc from a collection
-const q = query(colRef, where('author', '==', 'Giffty'));
+// const q = query(
+//   colRef,
+//   where('author', '==', 'Giffty'),
+//   orderBy('createdAt')
+// );
+
+// Ordering data by timestamp
+const q = query(colRef, orderBy('createdAt'));
 // so instead of passing the colRef to the onSnapshot function to get the data when there is a changes, we pass in the query
 
 // Real time collection data
@@ -62,6 +71,7 @@ addBookForm.addEventListener('submit', (e) => {
   addDoc(colRef, {
     title: addBookForm.title.value,
     author: addBookForm.author.value,
+    createdAt: serverTimestamp(),
   }).then(() => {
     addBookForm.reset();
   });
