@@ -7,6 +7,8 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
+  query,
+  where,
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -38,8 +40,13 @@ const colRef = collection(db, 'books');
 //   })
 //   .catch((err) => console.log(err.message));
 
+// Firestore queries to get a particular doc from a collection
+const q = query(colRef, where('author', '==', 'Giffty'));
+// so instead of passing the colRef to the onSnapshot function to get the data when there is a changes, we pass in the query
+
 // Real time collection data
-onSnapshot(colRef, (snapshot) => {
+// onSnapshot(colRef, (snapshot) => {
+onSnapshot(q, (snapshot) => {
   let books = [];
   snapshot.docs.forEach((doc) => {
     books.push({ ...doc.data(), id: doc.id });
