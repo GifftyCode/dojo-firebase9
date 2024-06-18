@@ -11,6 +11,7 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  getDoc,
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -88,4 +89,16 @@ deleteBookForm.addEventListener('submit', (e) => {
   deleteDoc(docRef).then(() => {
     deleteBookForm.reset();
   });
+});
+
+// Getting a single document
+const docRef = doc(db, 'books', 'IkyiHZlDusxLZgbgXyU7');
+
+// getDoc(docRef).then((doc) => {
+//   console.log(doc.data(), doc.id);
+// });
+
+// Subscribing to changes on a particular doc.
+onSnapshot(docRef, (doc) => {
+  console.log(doc.data(), doc.id);
 });
