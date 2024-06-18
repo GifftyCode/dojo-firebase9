@@ -15,6 +15,8 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+
 const firebaseConfig = {
   apiKey: 'AIzaSyARwSV9jBijJs9F8eaKXai7L3yVy20Mf3g',
   authDomain: 'fir-9-dojo-c6c84.firebaseapp.com',
@@ -29,6 +31,7 @@ initializeApp(firebaseConfig);
 
 // init services
 const db = getFirestore();
+const auth = getAuth();
 
 // collection ref
 const colRef = collection(db, 'books');
@@ -116,4 +119,22 @@ updateForm.addEventListener('submit', (e) => {
   }).then(() => {
     updateForm.reset();
   });
+});
+
+// signing users up
+const signupForm = document.querySelector('.signup');
+signupForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const email = signupForm.email.value;
+  const password = signupForm.password.value;
+
+  createUserWithEmailAndPassword(auth, email, password)
+    // the createUser method gives a user credential object with access to the user
+
+    .then((cred) => {
+      console.log('User Created: ', cred.user);
+      signupForm.reset();
+    })
+    .catch((err) => console.log(err.message));
 });
